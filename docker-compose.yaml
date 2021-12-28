@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  reverse-proxy:
+    build:
+      context: .
+      dockerfile: ./reverse-proxy/Dockerfile
+    networks:
+      - envoy-network
+    ports:
+      - "8080:8080"
+      - "8001:8001"
+networks:
+  envoy-network: {}
