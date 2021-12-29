@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "JyaJU5Y8lgsCkW1y9O+LeVVBFTrwiPGO5oD8oOD3L/8fCmjXTDLTm0X6ew52fZFtNOgV6n9PA05yGaKsb8eLiw==",
+  "success": true,
+  "projectFilePath": "/Users/rodrigogrechi/Documents/repositories/envoy-studies/service/service.csproj",
+  "expectedPackageFiles": [
+    "/Users/rodrigogrechi/.nuget/packages/microsoft.extensions.apidescription.server/3.0.0/microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "/Users/rodrigogrechi/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
+    "/Users/rodrigogrechi/.nuget/packages/swashbuckle.aspnetcore/6.2.3/swashbuckle.aspnetcore.6.2.3.nupkg.sha512",
+    "/Users/rodrigogrechi/.nuget/packages/swashbuckle.aspnetcore.swagger/6.2.3/swashbuckle.aspnetcore.swagger.6.2.3.nupkg.sha512",
+    "/Users/rodrigogrechi/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.2.3/swashbuckle.aspnetcore.swaggergen.6.2.3.nupkg.sha512",
+    "/Users/rodrigogrechi/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.2.3/swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512"
+  ],
+  "logs": []
+}
