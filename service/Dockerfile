@@ -2,7 +2,6 @@ FROM envoyproxy/envoy:v1.20.1
 
 COPY ./envoy.yaml /etc/envoy.yaml
 RUN chmod go+r /etc/envoy.yaml
-CMD ["/usr/local/bin/envoy", "-c", "/etc/envoy.yaml", "--service-cluster", "weather-forecast"]
 
 ENV \
     DOTNET_GENERATE_ASPNET_CERTIFICATE=false \
@@ -44,4 +43,6 @@ ENV ASPNETCORE_URLS http://*:8080
 
 WORKDIR /app
 
-ENTRYPOINT ["dotnet", "service.dll"]
+COPY start-service.sh .
+
+ENTRYPOINT ["/bin/sh", "start-service.sh"]
