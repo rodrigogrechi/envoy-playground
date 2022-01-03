@@ -7,4 +7,5 @@
 ```shell
 docker-compose pull
 docker-compose up --build -d
+curl -v 0.0.0.0:8080
 ```
