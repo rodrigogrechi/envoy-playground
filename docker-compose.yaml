@@ -1,13 +1,18 @@
 version: "3.8"
 services:
-  reverse-proxy:
+  front-envoy:
     build:
-      context: .
-      dockerfile: ./reverse-proxy/Dockerfile
+      context: ./front-envoy
+      dockerfile: Dockerfile
     networks:
-      - envoy-network
+    - envoymesh
     ports:
-      - "8080:8080"
-      - "8001:8001"
+    - "8080:8080"
+  weather-forecast:
+    build:
+      context: ./service
+      dockerfile: Dockerfile
+    networks:
+    - envoymesh
 networks:
-  envoy-network: {}
+  envoymesh: {}
