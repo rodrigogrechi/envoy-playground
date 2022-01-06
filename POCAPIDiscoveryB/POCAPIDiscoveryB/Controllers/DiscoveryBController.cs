@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace POCBPIDiscovery.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("discovery/[controller]")]
     public class DiscoveryBController : ControllerBase
     {
         private readonly ILogger<DiscoveryBController> _logger;

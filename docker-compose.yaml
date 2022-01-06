@@ -8,11 +8,39 @@ services:
     - envoymesh
     ports:
     - "8080:8080"
-  weather-forecast:
+    - "8001:8001"
+  discovery-a:
     build:
-      context: ./service
+      context: .
       dockerfile: Dockerfile
+      args:
+        FOLDER: POCAPIDiscoveryA
     networks:
     - envoymesh
+    environment:
+      - SERVICE_NAME=a
+      - SOLUTION=POCAPIDiscoveryA.dll
+  discovery-b:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        FOLDER: POCAPIDiscoveryB
+    networks:
+    - envoymesh
+    environment:
+      - SERVICE_NAME=b
+      - SOLUTION=POCAPIDiscoveryB.dll
+  discovery-c:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        FOLDER: POCAPIDiscoveryC
+    networks:
+    - envoymesh
+    environment:
+      - SERVICE_NAME=c
+      - SOLUTION=POCAPIDiscoveryC.dll
 networks:
   envoymesh: {}

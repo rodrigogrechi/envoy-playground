@@ -4,7 +4,7 @@
     "POCAPIDiscovery": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "discoveryA",
+      "launchUrl": "discovery/discoveryC",
       "applicationUrl": "http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

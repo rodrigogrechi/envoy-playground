@@ -19,23 +19,55 @@ static_resources:
               - "*"
               routes:
               - match:
-                  prefix: "/"
+                  prefix: "/discovery/DiscoveryA"
                 route:
-                  cluster: weather-forecast
+                  cluster: discoveryA
+              - match:
+                  prefix: "/discovery/DiscoveryB"
+                route:
+                  cluster: discoveryB
+              - match:
+                  prefix: "/discovery/DiscoveryC"
+                route:
+                  cluster: discoveryC
           http_filters:
           - name: envoy.filters.http.router
   clusters:
-  - name: weather-forecast
+  - name: discoveryA
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: weather-forecast
+      cluster_name: discoveryA
       endpoints:
       - lb_endpoints:
         - endpoint:
             address:
               socket_address:
-                address: weather-forecast
+                address: discovery-a
+                port_value: 8000
+  - name: discoveryB
+    type: STRICT_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: discoveryB
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: discovery-b
+                port_value: 8000
+  - name: discoveryC
+    type: STRICT_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: discoveryC
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: discovery-c
                 port_value: 8000
 admin:
   address:

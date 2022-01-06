@@ -6,15 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace POCAPIDiscovery.Controllers
+namespace POCCPIDiscovery.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class DiscoveryAController : ControllerBase
+    [Route("discovery/[controller]")]
+    public class DiscoveryCController : ControllerBase
     {
-        private readonly ILogger<DiscoveryAController> _logger;
+        private readonly ILogger<DiscoveryCController> _logger;
 
-        public DiscoveryAController(ILogger<DiscoveryAController> logger)
+        public DiscoveryCController(ILogger<DiscoveryCController> logger)
         {
             _logger = logger;
         }
@@ -24,25 +24,20 @@ namespace POCAPIDiscovery.Controllers
         {
             _logger.LogInformation("begin discovery");
 
-            Uri baseUrlB = new Uri("http://localhost:5001/DiscoveryB");
+            Uri baseUrlB = new Uri("http://discovery-b:8000/discovery/DiscoveryB");
             IRestClient clientB = new RestClient(baseUrlB);
             IRestRequest requestB = new RestRequest(Method.GET);
             IRestResponse<string> responseB = clientB.Execute<string>(requestB);
 
-            Uri baseUrlC = new Uri("http://localhost:5001/DiscoveryC");
-            IRestClient clientC = new RestClient(baseUrlC);
-            IRestRequest requestC = new RestRequest(Method.GET);
-            IRestResponse<string> responseC = clientC.Execute<string>(requestC);
-
             string status;
 
-            if (responseB.IsSuccessful && responseC.IsSuccessful)
+            if (responseB.IsSuccessful)
             {
                status = "Service Online";
             }
             else
             {
-                status = responseB.ErrorMessage;
+                status = "Service Offline";
             }
 
             Console.WriteLine(status);
