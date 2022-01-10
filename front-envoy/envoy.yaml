@@ -49,6 +49,7 @@ static_resources:
                   operation: request-discoveryC
           http_filters:
           - name: envoy.filters.http.router
+          use_remote_address: true
   clusters:
   - name: discoveryA
     type: STRICT_DNS
