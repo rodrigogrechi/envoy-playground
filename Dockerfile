@@ -1,7 +1,7 @@
 FROM envoyproxy/envoy:v1.20.1
 
 ARG FOLDER
-COPY ./envoy.yaml /etc/envoy.yaml
+COPY ./${FOLDER}/envoy.yaml /etc/envoy.yaml
 RUN chmod go+r /etc/envoy.yaml
 
 ENV \
