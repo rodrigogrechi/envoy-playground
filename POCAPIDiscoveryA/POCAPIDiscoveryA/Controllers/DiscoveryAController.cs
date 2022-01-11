@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RestSharp;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace POCAPIDiscovery.Controllers
@@ -20,23 +18,16 @@ namespace POCAPIDiscovery.Controllers
         }
 
         [HttpGet]
-        public string Get()
+        public async Task<string> Get()
         {
             _logger.LogInformation("begin discovery");
 
-            Uri baseUrlB = new Uri("http://discovery-b:8000/discovery/DiscoveryB");
-            IRestClient clientB = new RestClient(baseUrlB);
-            IRestRequest requestB = new RestRequest(Method.GET);
-            IRestResponse<string> responseB = clientB.Execute<string>(requestB);
-
-            Uri baseUrlC = new Uri("http://discovery-c:8000/discovery/DiscoveryC");
-            IRestClient clientC = new RestClient(baseUrlC);
-            IRestRequest requestC = new RestRequest(Method.GET);
-            IRestResponse<string> responseC = clientC.Execute<string>(requestC);
+            string responseB = await this.GetRest("http://discovery-b:9000/discovery/DiscoveryB");
+            string responseC = await this.GetRest("http://discovery-c:9000/discovery/DiscoveryC");
 
             string status;
 
-            if (responseB.IsSuccessful && responseC.IsSuccessful)
+            if (responseB != null && responseC != null)
             {
                status = "Service Online";
             }
@@ -49,6 +40,29 @@ namespace POCAPIDiscovery.Controllers
 
             _logger.LogInformation("end discovery");
             return status;
+        }
+
+        private async Task<string> GetRest(string url)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    Uri baseUrl = new Uri(url);
+                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(baseUrl);
+
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        return null;
+                    }
+
+                    return await httpResponseMessage.Content.ReadAsStringAsync();
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

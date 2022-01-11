@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace POCCPIDiscovery.Controllers
@@ -20,18 +20,15 @@ namespace POCCPIDiscovery.Controllers
         }
 
         [HttpGet]
-        public string Get()
+        public async Task<string> Get()
         {
             _logger.LogInformation("begin discovery");
 
-            Uri baseUrlB = new Uri("http://discovery-b:8000/discovery/DiscoveryB");
-            IRestClient clientB = new RestClient(baseUrlB);
-            IRestRequest requestB = new RestRequest(Method.GET);
-            IRestResponse<string> responseB = clientB.Execute<string>(requestB);
+            string responseB = await this.GetRest("http://discovery-b:9000/discovery/DiscoveryB");
 
             string status;
 
-            if (responseB.IsSuccessful)
+            if (responseB != null)
             {
                status = "Service Online";
             }
@@ -44,6 +41,29 @@ namespace POCCPIDiscovery.Controllers
 
             _logger.LogInformation("end discovery");
             return status;
+        }
+
+        private async Task<string> GetRest(string url)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    Uri baseUrl = new Uri(url);
+                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(baseUrl);
+
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        return null;
+                    }
+
+                    return await httpResponseMessage.Content.ReadAsStringAsync();
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
