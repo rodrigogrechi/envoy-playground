@@ -25,11 +25,23 @@ namespace POCAPIDiscovery
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHeaderPropagation(o =>
+            {
+                o.Headers.Add("x-ot-span-context");
+                o.Headers.Add("x-request-id");
+                o.Headers.Add("x-b3-traceid");
+                o.Headers.Add("x-b3-spanid");
+                o.Headers.Add("x-b3-parentspanid");
+                o.Headers.Add("x-b3-sampled");
+                o.Headers.Add("x-b3-flags");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHeaderPropagation();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
