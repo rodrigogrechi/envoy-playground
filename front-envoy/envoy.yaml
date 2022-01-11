@@ -32,30 +32,30 @@ static_resources:
               - match:
                   prefix: "/discovery/DiscoveryA"
                 route:
-                  cluster: discoveryA
+                  cluster: discovery-a
                 decorator:
-                  operation: request-discoveryA
+                  operation: request-discovery-a
               - match:
                   prefix: "/discovery/DiscoveryB"
                 route:
-                  cluster: discoveryB
+                  cluster: discovery-b
                 decorator:
-                  operation: request-discoveryB
+                  operation: request-discovery-b
               - match:
                   prefix: "/discovery/DiscoveryC"
                 route:
-                  cluster: discoveryC
+                  cluster: discovery-c
                 decorator:
-                  operation: request-discoveryC
+                  operation: request-discovery-c
           http_filters:
           - name: envoy.filters.http.router
           use_remote_address: true
   clusters:
-  - name: discoveryA
+  - name: discovery-a
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: discoveryA
+      cluster_name: discovery-a
       endpoints:
       - lb_endpoints:
         - endpoint:
@@ -63,11 +63,11 @@ static_resources:
               socket_address:
                 address: discovery-a
                 port_value: 8000
-  - name: discoveryB
+  - name: discovery-b
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: discoveryB
+      cluster_name: discovery-b
       endpoints:
       - lb_endpoints:
         - endpoint:
@@ -75,11 +75,11 @@ static_resources:
               socket_address:
                 address: discovery-b
                 port_value: 8000
-  - name: discoveryC
+  - name: discovery-c
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: discoveryC
+      cluster_name: discovery-c
       endpoints:
       - lb_endpoints:
         - endpoint:
@@ -104,12 +104,3 @@ admin:
     socket_address:
       address: 0.0.0.0
       port_value: 8001
-layered_runtime:
-  layers:
-  - name: static_layer_0
-    static_layer:
-      envoy:
-        resource_limits:
-          listener:
-            example_listener_name:
-              connection_limit: 10000
