@@ -1,104 +1,141 @@
 static_resources:
   listeners:
-  - address:
-      socket_address:
-        address: 0.0.0.0
-        port_value: 8080
-    traffic_direction: OUTBOUND
-    filter_chains:
-    - filters:
-      - name: envoy.filters.network.http_connection_manager
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-          generate_request_id: true
-          tracing:
-            provider:
-              name: envoy.tracers.zipkin
+    - address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 8080
+      traffic_direction: OUTBOUND
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
               typed_config:
-                "@type": type.googleapis.com/envoy.config.trace.v3.ZipkinConfig
-                collector_cluster: jaeger
-                collector_endpoint: "/api/v2/spans"
-                shared_span_context: false
-                collector_endpoint_version: HTTP_JSON
-          codec_type: AUTO
-          stat_prefix: ingress_http
-          route_config:
-            name: local_route
-            virtual_hosts:
-            - name: backend
-              domains:
-              - "*"
-              routes:
-              - match:
-                  prefix: "/discovery/DiscoveryA"
-                route:
-                  cluster: discovery-a
-                decorator:
-                  operation: request-discovery-a
-              - match:
-                  prefix: "/discovery/DiscoveryB"
-                route:
-                  cluster: discovery-b
-                decorator:
-                  operation: request-discovery-b
-              - match:
-                  prefix: "/discovery/DiscoveryC"
-                route:
-                  cluster: discovery-c
-                decorator:
-                  operation: request-discovery-c
-          http_filters:
-          - name: envoy.filters.http.router
-          use_remote_address: true
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                generate_request_id: true
+                tracing:
+                  provider:
+                    name: envoy.tracers.zipkin
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.config.trace.v3.ZipkinConfig
+                      collector_cluster: jaeger
+                      collector_endpoint: "/api/v2/spans"
+                      shared_span_context: false
+                      collector_endpoint_version: HTTP_JSON
+                codec_type: AUTO
+                stat_prefix: ingress_http
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: backend
+                      domains:
+                        - "*"
+                      routes:
+                        - match:
+                            prefix: "/discovery/DiscoveryA"
+                          route:
+                            cluster: discovery-a
+                          decorator:
+                            operation: request-discovery-a
+                        - match:
+                            prefix: "/discovery/DiscoveryB"
+                          route:
+                            cluster: discovery-b
+                          decorator:
+                            operation: request-discovery-b
+                        - match:
+                            prefix: "/discovery/DiscoveryC"
+                          route:
+                            cluster: discovery-c
+                          decorator:
+                            operation: request-discovery-c
+                http_filters:
+                  - name: envoy.filters.http.jwt_authn
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                      providers:
+                        oidc_provider:
+                          issuer: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_Yrmv1sqcu
+                          remote_jwks:
+                            http_uri:
+                              uri: cognito-idp.us-east-1.amazonaws.com/us-east-1_Yrmv1sqcu/.well-known/jwks.json
+                              cluster: identity_provider
+                              timeout: 1s
+                            cache_duration:
+                              seconds: 300
+                          forward: "true"
+                      rules:
+                        - match:
+                            prefix: /discovery
+                          requires:
+                            provider_name: oidc_provider
+                  - name: envoy.filters.http.router
+                use_remote_address: true
   clusters:
-  - name: discovery-a
-    type: STRICT_DNS
-    lb_policy: ROUND_ROBIN
-    load_assignment:
-      cluster_name: discovery-a
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: discovery-a
-                port_value: 8000
-  - name: discovery-b
-    type: STRICT_DNS
-    lb_policy: ROUND_ROBIN
-    load_assignment:
-      cluster_name: discovery-b
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: discovery-b
-                port_value: 8000
-  - name: discovery-c
-    type: STRICT_DNS
-    lb_policy: ROUND_ROBIN
-    load_assignment:
-      cluster_name: discovery-c
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: discovery-c
-                port_value: 8000
-  - name: jaeger
-    type: STRICT_DNS
-    lb_policy: ROUND_ROBIN
-    load_assignment:
-      cluster_name: jaeger
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: jaeger
-                port_value: 9411
+    - name: discovery-a
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: discovery-a
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: discovery-a
+                      port_value: 8000
+    - name: discovery-b
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: discovery-b
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: discovery-b
+                      port_value: 8000
+    - name: discovery-c
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: discovery-c
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: discovery-c
+                      port_value: 8000
+    - name: jaeger
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: jaeger
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: jaeger
+                      port_value: 9411
+    - name: identity_provider
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      dns_lookup_family: V4_ONLY
+      load_assignment:
+        cluster_name: identity_provider
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: cognito-idp.us-east-1.amazonaws.com
+                      port_value: 443
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+          sni: cognito-idp.eu-west-1.amazonaws.com
 admin:
   address:
     socket_address:
