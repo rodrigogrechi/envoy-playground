@@ -35,6 +35,7 @@ namespace POCAPIDiscovery
                 o.Headers.Add("x-b3-sampled");
                 o.Headers.Add("x-b3-flags");
             });
+            services.AddHttpClient("externalapi-client").AddHeaderPropagation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

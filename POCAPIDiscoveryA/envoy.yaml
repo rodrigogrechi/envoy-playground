@@ -22,7 +22,7 @@ static_resources:
           codec_type: AUTO
           stat_prefix: ingress_http
           route_config:
-            name: inbound_route
+            name: discovery-a-route
             virtual_hosts:
             - name: discoveryA
               domains:
@@ -33,7 +33,7 @@ static_resources:
                 route:
                   cluster: local_service
                 decorator:
-                  operation: request-discoveryA
+                  operation: request-discovery-a
           http_filters:
           - name: envoy.filters.http.router
   - address:
@@ -58,28 +58,24 @@ static_resources:
           codec_type: AUTO
           stat_prefix: egress_http
           route_config:
-            name: outbound_route
+            name: discovery-route
             virtual_hosts:
-            - name: discovery-b
+            - name: discovery
               domains:
-              - "discovery-b"
+              - "*"
               routes:
               - match:
                   prefix: "/discovery/DiscoveryB"
                 route:
                   cluster: discovery-b
                 decorator:
-                  operation: request-discoveryB-from-discoveryA
-            - name: discovery-c
-              domains:
-              - "discovery-c"
-              routes:
+                  operation: request-discovery-b-from-discovery-a
               - match:
                   prefix: "/discovery/DiscoveryC"
                 route:
                   cluster: discovery-c
                 decorator:
-                  operation: request-discoveryC-from-discoveryA
+                  operation: request-discovery-c-from-discovery-a
           http_filters:
           - name: envoy.filters.http.router
   clusters:

@@ -13,10 +13,12 @@ namespace POCCPIDiscovery.Controllers
     public class DiscoveryCController : ControllerBase
     {
         private readonly ILogger<DiscoveryCController> _logger;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public DiscoveryCController(ILogger<DiscoveryCController> logger)
+        public DiscoveryCController(ILogger<DiscoveryCController> logger, IHttpClientFactory clientFactory)
         {
             _logger = logger;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -24,7 +26,7 @@ namespace POCCPIDiscovery.Controllers
         {
             _logger.LogInformation("begin discovery");
 
-            string responseB = await this.GetRest("http://discovery-b:9000/discovery/DiscoveryB");
+            string responseB = await this.GetRest("http://localhost:9000/discovery/DiscoveryB");
 
             string status;
 
@@ -47,7 +49,7 @@ namespace POCCPIDiscovery.Controllers
         {
             try
             {
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = _clientFactory.CreateClient("externalapi-client"))
                 {
                     Uri baseUrl = new Uri(url);
                     HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(baseUrl);
